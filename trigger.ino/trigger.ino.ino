@@ -47,14 +47,13 @@ void loop() {
   if (signalIsHigh){
     if (signal < signalLow){
       cameraTrigger(pulseWidth);
-      Serial.println("trigger");
-      Serial.println(signal);
+      Serial.println("trigger pulseWidth: " + String(pulseWidth) + " signal: " + String(signal));
       signalIsHigh = false;
     }
   } else{
     if (signal > signalHigh){
       signalIsHigh = true;    //time to reset, ready for a new trigger
-      Serial.println("reset");
+      Serial.println("reset signal: " + String(signal));
     }
   }
 
