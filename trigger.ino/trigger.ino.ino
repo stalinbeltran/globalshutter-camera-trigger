@@ -12,7 +12,8 @@ int pulseWidth = 16000;
 
 bool signalIsHigh = true;
 int signal = 0;
-tring comando = "";
+int dir = 0;
+int dirValue = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -33,11 +34,13 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   if (Serial.available()){
-    Serial.println("comando");
-    comando = Serial.readString();
-    Serial.println(comando);
-    comando = Serial.readString();
-    Serial.println(comando);
+    Serial.println("command");
+    dir = Serial.readString().toInt();
+    Serial.println(dir);
+    delay(4000);                //you have time to write the value
+    dirValue = Serial.readString().toInt();
+    EEPROM.write(dir, dirValue);
+    Serial.println(dirValue);
   }
 
   signal = analogRead(SIGNAL_PIN);
@@ -49,8 +52,10 @@ void loop() {
       signalIsHigh = false;
     }
   } else{
-    if (signal > signalHigh)
+    if (signal > signalHigh){
       signalIsHigh = true;    //time to reset, ready for a new trigger
+      Serial.println("reset");
+    }
   }
 
   //Serial.println(signal);
