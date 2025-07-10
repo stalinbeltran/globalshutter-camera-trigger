@@ -12,6 +12,7 @@ int pulseWidth = 16000;
 
 bool signalIsHigh = true;
 int signal = 0;
+tring comando = "";
 
 void setup() {
   // put your setup code here, to run once:
@@ -30,6 +31,15 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+
+  if (Serial.available()){
+    Serial.println("comando");
+    comando = Serial.readString();
+    Serial.println(comando);
+    comando = Serial.readString();
+    Serial.println(comando);
+  }
+
   signal = analogRead(SIGNAL_PIN);
   if (signalIsHigh){
     if (signal < signalLow){
