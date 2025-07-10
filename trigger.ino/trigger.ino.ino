@@ -1,3 +1,4 @@
+void(* resetFunc) (void) = 0; // create a standard reset function
 #include <EEPROM.h>
 int SIGNAL_PIN = A0;
 int TRIGGER_PIN = 2;
@@ -14,6 +15,7 @@ bool signalIsHigh = true;
 int signal = 0;
 int dir = 0;
 int dirValue = 0;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -41,6 +43,7 @@ void loop() {
     dirValue = Serial.readString().toInt();
     EEPROM.write(dir, dirValue);
     Serial.println(dirValue);
+    resetFunc();  // reset the Arduino via software function
   }
 
   signal = analogRead(SIGNAL_PIN);
