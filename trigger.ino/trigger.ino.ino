@@ -3,12 +3,12 @@ int SIGNAL_PIN = A0;
 int TRIGGER_PIN = 2;
 //saved values dirs:
 int SIGNAL_LOW_DIR = 0;
-int SIGNAL_HIGH_DIR = 1;
-int PULSE_WIDTH_DIR = 2;
+int SIGNAL_HIGH_DIR = 2;
+int PULSE_WIDTH_DIR = 4;
 
-int signalLow = 48;
-int signalHigh = 55;
-int pulseWidth = 16000;
+int signalLow = 0;
+int signalHigh = 0;
+int pulseWidth = 0;
 
 bool signalIsHigh = true;
 int signal = 0;
@@ -23,9 +23,9 @@ void setup() {
   pinMode(TRIGGER_PIN, OUTPUT);
 
   //read signal "borders"
-  signalLow = EEPROM.read(SIGNAL_LOW_DIR);
-  signalHigh = EEPROM.read(SIGNAL_HIGH_DIR);
-  pulseWidth = EEPROM.read(PULSE_WIDTH_DIR);
+  EEPROM.get(SIGNAL_LOW_DIR, signalLow);
+  EEPROM.get(SIGNAL_HIGH_DIR, signalHigh);
+  EEPROM.get(PULSE_WIDTH_DIR, pulseWidth);
   
   digitalWrite(TRIGGER_PIN, 1);   //set to high, ready to trigger
 }
@@ -36,10 +36,10 @@ void loop() {
   if (Serial.available()){
     Serial.println("command");
     dir = Serial.readString().toInt();
-    Serial.println(dir);
+    Serial.println("address: " + String(dir) + " \nPlease type value:");
     delay(4000);                //you have time to write the value
     dirValue = Serial.readString().toInt();
-    EEPROM.write(dir, dirValue);
+    EEPROM.put(dir, dirValue);
     Serial.println(dirValue);
   }
 
