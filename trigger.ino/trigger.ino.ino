@@ -17,7 +17,7 @@ int dirValue = 0;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("starting");
   pinMode(SIGNAL_PIN, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
