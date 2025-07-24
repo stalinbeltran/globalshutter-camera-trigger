@@ -14,6 +14,10 @@ bool signalIsHigh = true;
 int signal = 0;
 int dir = 0;
 int dirValue = 0;
+int cont = 0;
+int inicio = millis();
+int final = 0;
+int elapsed = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -47,17 +51,32 @@ void loop() {
   if (signalIsHigh){
     if (signal < signalLow){
       cameraTrigger(pulseWidth);
-      Serial.println("trigger pulseWidth: " + String(pulseWidth) + " signal: " + String(signal));
+      //Serial.println("trigger pulseWidth: " + String(pulseWidth) + " signal: " + String(signal));
       signalIsHigh = false;
     }
   } else{
     if (signal > signalHigh){
       signalIsHigh = true;    //time to reset, ready for a new trigger
-      Serial.println("reset signal: " + String(signal));
+      //Serial.println("reset signal: " + String(signal));
     }
   }
 
+  if (signal > 20){
+    if (cont == 0){
+      final = millis();
+      elapsed = final - inicio;
+      Serial.println(elapsed);
+      inicio = final;
+    }
+    cont++;
+   }
+  if (signal < 2){
+    //if (cont > 0) Serial.println(cont);
+    cont = 0;
+  }
+
   //Serial.println(signal);
+  //delay(100);
 }
 
 void cameraTrigger(int pulseWidth){
