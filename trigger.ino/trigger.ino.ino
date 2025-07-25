@@ -61,7 +61,8 @@ void loop() {
     }
   }
 
-  if (signal > 20){
+  if (signal > 46){
+    //Serial.println(3);
     if (cont == 0){
       final = millis();
       elapsed = final - inicio;
@@ -70,13 +71,16 @@ void loop() {
     }
     cont++;
    }
-  if (signal < 2){
-    //if (cont > 0) Serial.println(cont);
-    cont = 0;
+  if (signal < 40){
+    //Serial.println(-3);
+    if (cont > 0){
+      //Serial.println(cont);
+      cont = 0;
+    }
   }
 
   //Serial.println(signal);
-  //delay(100);
+  //delay(10);
 }
 
 void cameraTrigger(int pulseWidth){
