@@ -66,7 +66,8 @@ void loop() {
     if (cont == 0){
       final = millis();
       elapsed = final - inicio;
-      Serial.println(elapsed);
+      if (elapsed > 50)
+        Serial.println(elapsed);
       inicio = final;
     }
     cont++;
