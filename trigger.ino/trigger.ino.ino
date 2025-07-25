@@ -64,20 +64,20 @@ void loop() {
     }
   }
 
-  if (signal > 46){
+  if (signal > 42){
     //Serial.println(3);
     if (cont == 0){
       final = millis();
       elapsed = final - inicio;
       if (elapsed > 50){
-        cameraTrigger(pulseWidth);
-        //Serial.println(elapsed);
+        //cameraTrigger(pulseWidth);
+        Serial.println(elapsed);
         inicio = final;
       }
     }
     cont++;
    }
-  if (signal < 40){
+  if (signal < 30){
     //Serial.println(-3);
     if (cont > 0){
       //Serial.println(cont);
@@ -85,11 +85,12 @@ void loop() {
     }
   }
 
-  Serial.println(signal);
+  //Serial.println(signal);
   //delay(10);
   referencia++;
   if (referencia > 300){
-    Serial.println(0);
+    //Serial.println(0);
+    //Serial.println(80);
     referencia = 0;
   }
 }
