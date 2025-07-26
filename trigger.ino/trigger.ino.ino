@@ -64,7 +64,7 @@ void loop() {
     }
   }
 
-  if (signal > 42){
+  if (signal > 50){ //53
     //Serial.println(3);
     if (cont == 0){
       final = millis();
@@ -77,7 +77,7 @@ void loop() {
     }
     cont++;
    }
-  if (signal < 30){
+  if (signal < 20){
     //Serial.println(-3);
     if (cont > 0){
       //Serial.println(cont);
