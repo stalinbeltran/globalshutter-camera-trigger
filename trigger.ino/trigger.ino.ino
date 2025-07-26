@@ -69,15 +69,15 @@ void loop() {
     if (cont == 0){
       final = millis();
       elapsed = final - inicio;
+      Serial.println(elapsed);
       if (elapsed > 50){
-        //cameraTrigger(pulseWidth);
-        Serial.println(elapsed);
+        cameraTrigger(pulseWidth);
         inicio = final;
       }
     }
     cont++;
    }
-  if (signal < 20){
+  if (signal < 40){
     //Serial.println(-3);
     if (cont > 0){
       //Serial.println(cont);
