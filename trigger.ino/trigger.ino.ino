@@ -8,7 +8,7 @@ int PULSE_WIDTH_DIR = 4;
 
 int signalLow = 0;
 int signalHigh = 0;
-int pulseWidth = 0;
+int pulseWidth = 100;
 
 bool signalIsHigh = true;
 int signal = 0;
@@ -30,7 +30,7 @@ void setup() {
   //read signal "borders"
   EEPROM.get(SIGNAL_LOW_DIR, signalLow);
   EEPROM.get(SIGNAL_HIGH_DIR, signalHigh);
-  EEPROM.get(PULSE_WIDTH_DIR, pulseWidth);
+  //EEPROM.get(PULSE_WIDTH_DIR, pulseWidth);
   
   digitalWrite(TRIGGER_PIN, 1);   //set to high, ready to trigger
 //  Serial.print("pulseWidth: ");
@@ -51,34 +51,19 @@ void loop() {
   }
 
   signal = analogRead(SIGNAL_PIN);
-  if (signalIsHigh){
-    if (signal < signalLow){
-      //cameraTrigger(pulseWidth);
-      //Serial.println("trigger pulseWidth: " + String(pulseWidth) + " signal: " + String(signal));
-      signalIsHigh = false;
-    }
-  } else{
-    if (signal > signalHigh){
-      signalIsHigh = true;    //time to reset, ready for a new trigger
-      //Serial.println("reset signal: " + String(signal));
-    }
-  }
 
   if (signal > 50){ //53
+    cameraTrigger(pulseWidth);
     //Serial.println(3);
     if (cont == 0){
       final = millis();
       elapsed = final - inicio;
       Serial.println(elapsed);
-      if (elapsed > 50){
-        cameraTrigger(pulseWidth);
-        inicio = final;
-      }
+      inicio = final;
     }
     cont++;
    }
   if (signal < 40){
-    //Serial.println(-3);
     if (cont > 0){
       //Serial.println(cont);
       cont = 0;
@@ -90,7 +75,6 @@ void loop() {
   referencia++;
   if (referencia > 300){
     //Serial.println(0);
-    //Serial.println(80);
     referencia = 0;
   }
 }
