@@ -8,7 +8,7 @@ int PULSE_WIDTH_DIR = 4;
 
 int signalLow = 0;
 int signalHigh = 0;
-int pulseWidth = 100;
+int pulseWidth = 80;
 
 bool signalIsHigh = true;
 int signal = 0;
@@ -53,19 +53,19 @@ void loop() {
   signal = analogRead(SIGNAL_PIN);
 
   if (signal > 50){ //53
-    cameraTrigger(pulseWidth);
     //Serial.println(3);
-    if (cont == 0){
-      final = millis();
-      elapsed = final - inicio;
-      Serial.println(elapsed);
-      inicio = final;
-    }
+    //if (cont == 0){
+    //}
     cont++;
    }
   if (signal < 40){
     if (cont > 0){
+      cameraTrigger(pulseWidth);
       //Serial.println(cont);
+      final = millis();
+      elapsed = final - inicio;
+      Serial.println(elapsed);
+      inicio = final;
       cont = 0;
     }
   }
@@ -80,8 +80,8 @@ void loop() {
 }
 
 void cameraTrigger(int pulseWidth){
-  //Serial.println("trigger");
   digitalWrite(TRIGGER_PIN, 0);
   delayMicroseconds(pulseWidth);
   digitalWrite(TRIGGER_PIN, 1);
+  //Serial.println("trigger:10");
 }
