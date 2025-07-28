@@ -8,7 +8,7 @@ int PULSE_WIDTH_DIR = 4;
 
 int signalLow = 0;
 int signalHigh = 0;
-int pulseWidth = 80;
+int pulseWidth = 50;
 
 bool signalIsHigh = true;
 int signal = 0;
