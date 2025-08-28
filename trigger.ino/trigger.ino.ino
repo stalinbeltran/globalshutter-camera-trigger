@@ -1,17 +1,17 @@
 #include <EEPROM.h>
-int SIGNAL_PIN = A0;
+int SIGNAL_PIN0 = A0;
+int SIGNAL_PIN1 = A1;
 int TRIGGER_PIN = 2;
-//saved values dirs:
-int SIGNAL_LOW_DIR = 0;
-int SIGNAL_HIGH_DIR = 2;
-int PULSE_WIDTH_DIR = 4;
 
-int signalLow = 0;
-int signalHigh = 0;
-int pulseWidth = 50;
+
+//signal "borders"
+int signalLow = 40;
+int signalHigh = 50;
+int pulseWidth = 80;
 
 bool signalIsHigh = true;
-int signal = 0;
+int signal0 = 0;
+int signal1 = 0;
 int dir = 0;
 int dirValue = 0;
 int cont = 0;
@@ -24,47 +24,30 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println("starting");
-  pinMode(SIGNAL_PIN, INPUT);
+  pinMode(SIGNAL_PIN0, INPUT);
+  pinMode(SIGNAL_PIN1, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
 
-  //read signal "borders"
-  EEPROM.get(SIGNAL_LOW_DIR, signalLow);
-  EEPROM.get(SIGNAL_HIGH_DIR, signalHigh);
-  //EEPROM.get(PULSE_WIDTH_DIR, pulseWidth);
   
-  digitalWrite(TRIGGER_PIN, 1);   //set to high, ready to trigger
+  digitalWrite(TRIGGER_PIN, 0);   //set to low, ready to trigger by optoisolator
 //  Serial.print("pulseWidth: ");
 //  Serial.println(pulseWidth);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
-  if (Serial.available()){
-    Serial.println("command");
-    dir = Serial.readString().toInt();
-    Serial.println("address: " + String(dir) + " \nPlease type value:");
-    delay(4000);                //you have time to write the value
-    dirValue = Serial.readString().toInt();
-    EEPROM.put(dir, dirValue);
-    Serial.println(dirValue);
-  }
+  signal0 = analogRead(SIGNAL_PIN0);
+  signal1 = analogRead(SIGNAL_PIN1);
 
-  signal = analogRead(SIGNAL_PIN);
-
-  if (signal > 50){ //53
-    //Serial.println(3);
-    //if (cont == 0){
-    //}
+  if (signal0 > signalHigh || signal1 > signalHigh){
     cont++;
    }
-  if (signal < 40){
+  if (signal0 < signalLow || signal1 < signalLow){
     if (cont > 0){
       cameraTrigger(pulseWidth);
-      //Serial.println(cont);
       final = millis();
       elapsed = final - inicio;
-      Serial.println(elapsed);
+      //Serial.println(elapsed);
       inicio = final;
       cont = 0;
     }
@@ -80,8 +63,11 @@ void loop() {
 }
 
 void cameraTrigger(int pulseWidth){
-  digitalWrite(TRIGGER_PIN, 0);
-  delayMicroseconds(pulseWidth);
   digitalWrite(TRIGGER_PIN, 1);
-  //Serial.println("trigger:10");
+  delayMicroseconds(pulseWidth);
+  digitalWrite(TRIGGER_PIN, 0);
+}
+
+void processSignal(int signal, int &counter){
+  
 }
