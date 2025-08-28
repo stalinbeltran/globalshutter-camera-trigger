@@ -5,16 +5,15 @@ int TRIGGER_PIN = 2;
 
 
 //signal "borders"
-int signalLow = 40;
+int signalLow = 45;
 int signalHigh = 50;
 int pulseWidth = 80;
 
-bool signalIsHigh = true;
 int signal0 = 0;
 int signal1 = 0;
-int dir = 0;
-int dirValue = 0;
-int cont = 0;
+int counter0 = 0;   //status triggered in the begining
+int counter1 = 0;   //status triggered in the begining
+
 int inicio = millis();
 int final = 0;
 int elapsed = 0;
@@ -23,43 +22,34 @@ int referencia = 0;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  Serial.println("starting");
   pinMode(SIGNAL_PIN0, INPUT);
   pinMode(SIGNAL_PIN1, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
 
-  
-  digitalWrite(TRIGGER_PIN, 0);   //set to low, ready to trigger by optoisolator
-//  Serial.print("pulseWidth: ");
-//  Serial.println(pulseWidth);
+  digitalWrite(TRIGGER_PIN, 0);   //set to low, ready to trigger the optoisolator
 }
 
 void loop() {
 
   signal0 = analogRead(SIGNAL_PIN0);
   signal1 = analogRead(SIGNAL_PIN1);
+  //processSignal(signal0, counter0);
+  processSignal(signal1, counter1);
 
-  if (signal0 > signalHigh || signal1 > signalHigh){
-    cont++;
-   }
-  if (signal0 < signalLow || signal1 < signalLow){
-    if (cont > 0){
-      cameraTrigger(pulseWidth);
-      final = millis();
-      elapsed = final - inicio;
-      //Serial.println(elapsed);
-      inicio = final;
-      cont = 0;
-    }
-  }
+  Serial.print(" signal0:");
+  Serial.print(signal0);
+  Serial.print(" signal1:");
+  Serial.print(signal1);
+  Serial.print(" ref:0 ");
+  
+  Serial.print(" elapsed:");
+  Serial.print(elapsed);
+  Serial.println(" ");
 
-  //Serial.println(signal);
-  //delay(10);
-  referencia++;
-  if (referencia > 300){
-    //Serial.println(0);
-    referencia = 0;
-  }
+  Serial.println("");
+  //Serial.println("base: 0");
+  //Serial.println("base2: 80");
+
 }
 
 void cameraTrigger(int pulseWidth){
@@ -69,5 +59,18 @@ void cameraTrigger(int pulseWidth){
 }
 
 void processSignal(int signal, int &counter){
-  
+  if (signal > signalHigh){
+    counter++;               //reset trigger
+  }
+  if (signal < signalLow){
+    if (counter > 0){        //ready to trigger
+      cameraTrigger(pulseWidth);
+      counter = 0;           //triggered
+      
+      final = millis();
+      elapsed = final - inicio;
+      inicio = final;
+
+    }
+  }
 }
