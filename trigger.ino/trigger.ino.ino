@@ -18,6 +18,7 @@ int inicio = millis();
 int final = 0;
 int elapsed = 0;
 int referencia = 0;
+int factor = 15;
 
 void setup() {
   // put your setup code here, to run once:
@@ -36,10 +37,11 @@ void loop() {
   //processSignal(signal0, counter0);
   processSignal(signal1, counter1);
 
+  if (elapsed > 950){
   Serial.print(" signal0:");
-  Serial.print(signal0);
+  Serial.print(signal0*factor);
   Serial.print(" signal1:");
-  Serial.print(signal1);
+  Serial.print(signal1*factor);
   Serial.print(" ref:0 ");
   
   Serial.print(" elapsed:");
@@ -47,6 +49,7 @@ void loop() {
   Serial.println(" ");
 
   Serial.println("");
+  }
   //Serial.println("base: 0");
   //Serial.println("base2: 80");
 
