@@ -5,12 +5,12 @@ int TRIGGER_PIN = 2;
 
 
 //signal "borders"
-int signalLow = 45;
+int signalLow = 40;
 int signalHigh = 50;
 int pulseWidth = 80;
 
-int signal0 = 0;
-int signal1 = 0;
+int signal0 = 0;    //sensor for moving mirror
+int signal1 = 0;    //sensor for static mirror
 int counter0 = 0;   //status triggered in the begining
 int counter1 = 0;   //status triggered in the begining
 
@@ -31,24 +31,25 @@ void setup() {
 }
 
 void loop() {
-
+  int previousElapsed = 0;
   signal0 = analogRead(SIGNAL_PIN0);
   signal1 = analogRead(SIGNAL_PIN1);
   //processSignal(signal0, counter0);
   processSignal(signal1, counter1);
 
-  if (elapsed > 950){
-  Serial.print(" signal0:");
-  Serial.print(signal0*factor);
-  Serial.print(" signal1:");
-  Serial.print(signal1*factor);
-  Serial.print(" ref:0 ");
+  if (abs(elapsed - previousElapsed) > 950) {
+    previousElapsed = elapsed;
+    Serial.print(" signal0:");
+    Serial.print(signal0*factor);
+    Serial.print(" signal1:");
+    Serial.print(signal1*factor);
+    Serial.print(" ref:0 ");
+    
+    Serial.print(" elapsed:");
+    Serial.print(elapsed);
+    Serial.println(" ");
   
-  Serial.print(" elapsed:");
-  Serial.print(elapsed);
-  Serial.println(" ");
-
-  Serial.println("");
+    Serial.println("");
   }
   //Serial.println("base: 0");
   //Serial.println("base2: 80");
