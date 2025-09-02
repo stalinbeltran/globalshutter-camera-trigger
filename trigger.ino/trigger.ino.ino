@@ -34,25 +34,9 @@ void loop() {
   int previousElapsed = 0;
   signal0 = analogRead(SIGNAL_PIN0);
   signal1 = analogRead(SIGNAL_PIN1);
-  //processSignal(signal0, counter0);
+  processSignal(signal0, counter0);
   processSignal(signal1, counter1);
 
-  if (abs(elapsed - previousElapsed) > 950) {
-    previousElapsed = elapsed;
-    Serial.print(" signal0:");
-    Serial.print(signal0*factor);
-    Serial.print(" signal1:");
-    Serial.print(signal1*factor);
-    Serial.print(" ref:0 ");
-    
-    Serial.print(" elapsed:");
-    Serial.print(elapsed);
-    Serial.println(" ");
-  
-    Serial.println("");
-  }
-  //Serial.println("base: 0");
-  //Serial.println("base2: 80");
 
 }
 
@@ -74,7 +58,31 @@ void processSignal(int signal, int &counter){
       final = millis();
       elapsed = final - inicio;
       inicio = final;
+      printValue("elapsed", elapsed);
 
     }
   }
 }
+
+void printValue(String name, int value){
+  
+    Serial.print(" " + name + ":");
+    Serial.print(value);
+    Serial.println(" ");
+}
+
+
+
+//  if (abs(elapsed - previousElapsed) > 950) {
+//    previousElapsed = elapsed;
+//    Serial.print(" signal0:");
+//    Serial.print(signal0*factor);
+//    Serial.print(" signal1:");
+//    Serial.print(signal1*factor);
+//    Serial.print(" ref:0 ");
+//    
+//  
+//    Serial.println("");
+//  }
+  //Serial.println("base: 0");
+  //Serial.println("base2: 80");
