@@ -7,7 +7,7 @@ int TRIGGER_PIN = 2;
 //signal "borders"
 int signalLow = 40;
 int signalHigh = 50;
-int pulseWidth = 80;
+int pulseWidth = 31;    //31 is the minimum pulse width that works
 
 int signal0 = 0;    //sensor for moving mirror
 int signal1 = 0;    //sensor for static mirror
@@ -27,7 +27,7 @@ void setup() {
   pinMode(SIGNAL_PIN1, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
 
-  digitalWrite(TRIGGER_PIN, 0);   //set to low, ready to trigger the optoisolator
+  digitalWrite(TRIGGER_PIN, 1);   //set to low, ready to trigger the optoisolator
 }
 
 void loop() {
@@ -41,9 +41,9 @@ void loop() {
 }
 
 void cameraTrigger(int pulseWidth){
-  digitalWrite(TRIGGER_PIN, 1);
-  delayMicroseconds(pulseWidth);
   digitalWrite(TRIGGER_PIN, 0);
+  delayMicroseconds(pulseWidth);
+  digitalWrite(TRIGGER_PIN, 1);
 }
 
 void processSignal(int signal, int &counter){
