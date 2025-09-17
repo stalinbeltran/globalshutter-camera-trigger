@@ -58,7 +58,7 @@ void processSignal(int signal, int &counter){
       final = millis();
       elapsed = final - inicio;
       inicio = final;
-      printValue("elapsed", elapsed);
+      //printValue("elapsed", elapsed);
 
     }
   }
@@ -71,18 +71,3 @@ void printValue(String name, int value){
     Serial.println(" ");
 }
 
-
-
-//  if (abs(elapsed - previousElapsed) > 950) {
-//    previousElapsed = elapsed;
-//    Serial.print(" signal0:");
-//    Serial.print(signal0*factor);
-//    Serial.print(" signal1:");
-//    Serial.print(signal1*factor);
-//    Serial.print(" ref:0 ");
-//    
-//  
-//    Serial.println("");
-//  }
-  //Serial.println("base: 0");
-  //Serial.println("base2: 80");
