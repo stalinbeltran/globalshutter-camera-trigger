@@ -36,9 +36,7 @@ void setup() {
 void loop() {
   int previousElapsed = 0;
   signal0 = analogRead(SIGNAL_PIN0);
-  //signal1 = analogRead(SIGNAL_PIN1);
   processSignal(signal0, counter0, beginningPulse0, widthPulse0, status);
-  //processSignal(signal1, counter1);
 
 
 }
@@ -52,10 +50,10 @@ void cameraTrigger(int pulseWidth){
 void processSignal(int signal, int &counter, int &beginningPulse, int &widthPulse, int &status){
   int final, widthPulseActual = 0;
   if (signal > signalHigh){
-    counter++;               //reset trigger
+    counter++;               //sensed pulse is now high
     if (counter == 1){
       widthPulseActual = micros() - beginningPulse;
-      if (widthPulseActual > widthPulse*2){
+      if (widthPulseActual > widthPulse*2){     //widthPulseActual should be longer
         status = MOBILE_COMING;
 //        printValue("widthPulseActual", widthPulseActual);
 //        printValue("widthPulse", widthPulse);
@@ -63,7 +61,7 @@ void processSignal(int signal, int &counter, int &beginningPulse, int &widthPuls
         status = RESET;
       }
       
-        widthPulse = widthPulseActual;
+        widthPulse = widthPulseActual;    //save sensed pulse width
     }
   }
   if (signal < signalLow){
