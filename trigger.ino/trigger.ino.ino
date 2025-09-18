@@ -19,6 +19,8 @@ int final = 0;
 int elapsed = 0;
 int referencia = 0;
 int factor = 15;
+int movil = false;
+int waitingTime = 35;
 
 void setup() {
   // put your setup code here, to run once:
@@ -28,15 +30,23 @@ void setup() {
   pinMode(TRIGGER_PIN, OUTPUT);
 
   digitalWrite(TRIGGER_PIN, 1);   //set to low, ready to trigger the optoisolator
+  
 }
 
 void loop() {
-  int previousElapsed = 0;
-  signal0 = analogRead(SIGNAL_PIN0);
-  signal1 = analogRead(SIGNAL_PIN1);
-  processSignal(signal0, counter0);
-  processSignal(signal1, counter1);
-
+//  int previousElapsed = 0;
+//  signal0 = analogRead(SIGNAL_PIN0);
+//  signal1 = analogRead(SIGNAL_PIN1);
+//  processSignal(signal0, counter0);
+//  processSignal(signal1, counter1);
+  final = millis();
+  if (final-inicio >= waitingTime){     //each N milliseconds (debugging only)
+    cameraTrigger(pulseWidth);
+    inicio = final;
+    movil = !movil;
+    if (movil) waitingTime = 75;
+    else waitingTime = 35;
+  }
 
 }
 
@@ -70,4 +80,3 @@ void printValue(String name, int value){
     Serial.print(value);
     Serial.println(" ");
 }
-
