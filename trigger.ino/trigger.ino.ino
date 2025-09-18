@@ -57,8 +57,8 @@ void processSignal(int signal, int &counter, int &beginningPulse, int &widthPuls
       widthPulseActual = micros() - beginningPulse;
       if (widthPulseActual > widthPulse*2){
         status = MOBILE_COMING;
-        printValue("widthPulseActual", widthPulseActual);
-        printValue("widthPulse", widthPulse);
+//        printValue("widthPulseActual", widthPulseActual);
+//        printValue("widthPulse", widthPulse);
       } else{
         status = RESET;
       }
