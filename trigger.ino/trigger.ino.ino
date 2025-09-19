@@ -1,6 +1,5 @@
 #include <EEPROM.h>
 int SIGNAL_PIN0 = A0;
-//int SIGNAL_PIN1 = A1;
 int TRIGGER_PIN = 2;
 
 //statuses:
@@ -14,31 +13,22 @@ int signalHigh = 50;
 int pulseWidth = 31;    //31 is the minimum pulse width that works
 
 int signal0 = 0;    //sensor for moving mirror
-int signal1 = 0;    //sensor for static mirror
 int counter0 = 0;   //status triggered in the begining
-int counter1 = 0;   //status triggered in the begining
-int beginningPulse0 = 0;
-int widthPulse0 = 0;
-
-int referencia = 0;
-int factor = 15;
+int beginningPulse0 = micros();
+int widthPulse0 = 999999999;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(SIGNAL_PIN0, INPUT);
-  //pinMode(SIGNAL_PIN1, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
 
-  digitalWrite(TRIGGER_PIN, 1);   //set to low, ready to trigger the optoisolator
+  digitalWrite(TRIGGER_PIN, 1);   //set to high, ready to trigger the optoisolator
 }
 
 void loop() {
-  int previousElapsed = 0;
   signal0 = analogRead(SIGNAL_PIN0);
   processSignal(signal0, counter0, beginningPulse0, widthPulse0, status);
-
-
 }
 
 void cameraTrigger(int pulseWidth){
@@ -48,7 +38,7 @@ void cameraTrigger(int pulseWidth){
 }
 
 void processSignal(int signal, int &counter, int &beginningPulse, int &widthPulse, int &status){
-  int final, widthPulseActual = 0;
+  int widthPulseActual = 0;
   if (signal > signalHigh){
     counter++;               //sensed pulse is now high
     if (counter == 1){
