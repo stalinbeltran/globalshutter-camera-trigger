@@ -5,6 +5,7 @@ int TRIGGER_PIN = 2;
 //statuses:
 const int RESET = 0;
 const int MOBILE_COMING = 1;
+const int FIXED_COMING = 2;
 int status = RESET;
 
 //signal "borders"
@@ -44,11 +45,8 @@ void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsi
     if (counter == 1){
       microsActual = (unsigned long)micros();
       widthPulseActual = (unsigned long)microsActual - (unsigned long)beginningPulse;
-//        printValue("widthPulse", widthPulse);
-//        printValue("microsActual", (unsigned long)microsActual);
-//        printValue("beginningPulse", (unsigned long)beginningPulse);
         printValue("widthPulseActual", (unsigned long)widthPulseActual);
-      if (widthPulseActual > widthPulse*2){     //widthPulseActual should be longer
+      if (widthPulseActual > widthPulse*2){     //widthPulseActual should be longer if it has no mirror
         status = MOBILE_COMING;
       } else{
         status = RESET;
@@ -56,7 +54,6 @@ void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsi
       
       widthPulse = widthPulseActual;    //save sensed pulse width
     }
-    return;
   }
   if (signal < signalLow){		//sensed pulse is now low
     if (counter > 0){        	//previously was high, so mobile arm is now detected
@@ -64,10 +61,8 @@ void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsi
       
 //        printValue("---beginningPulse", beginningPulse);
       if (status == MOBILE_COMING){		//detected mobile mirror
-        cameraTrigger(pulseWidth);    //pulse mobile mirror
-        //delay(35);                    //replace 35 by 1/4 T
-        //cameraTrigger(pulseWidth);    //pulse fixed mirror (triggered entirely by time)
-        status = RESET;
+        cameraTrigger(pulseWidth);    //pulse to camera capture mobile mirror
+        status = FIXED_COMING;          //ready to read fixed mirror
       }
       counter = 0;           //trigger once only
     }
