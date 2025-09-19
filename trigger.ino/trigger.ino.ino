@@ -6,6 +6,7 @@ int TRIGGER_PIN = 2;
 const int RESET = 0;
 const int MOBILE_COMING = 1;
 const int FIXED_COMING = 2;
+const int FIXED_WAITING = 2;
 int status = RESET;
 
 //signal "borders"
@@ -16,6 +17,9 @@ int pulseWidth = 31;    //31 is the minimum pulse width that works
 int signal0 = 0;    //sensor for moving mirror
 int counter0 = 0;   //status triggered in the begining
 unsigned long beginningPulse0 = micros();
+unsigned long periodBeginning = micros();
+unsigned long halfPeriod = 0;
+unsigned long quarterPeriod = 0;
 unsigned long widthPulse0 = 9999;
 
 void setup() {
@@ -30,7 +34,36 @@ void setup() {
 void loop() {
   signal0 = analogRead(SIGNAL_PIN0);
   processSignal(signal0, counter0, beginningPulse0, widthPulse0, status);
+  periodMeasurement(periodBeginning, beginningPulse0, halfPeriod, quarterPeriod);
 }
+
+void periodMeasurement(unsigned long &periodBeginning, unsigned long &actualPulseBeginning, 
+  unsigned long &halfPeriod, unsigned long &quarterPeriod){
+  if(periodBeginning != actualPulseBeginning){
+    halfPeriod = (unsigned long)actualPulseBeginning - (unsigned long)periodBeginning;
+    periodBeginning = actualPulseBeginning;
+    quarterPeriod = halfPeriod/2;
+  }
+}
+
+void fixedMirrorPulse(unsigned long &beginningFixedWaiting, unsigned long &quarterPeriod){
+  unsigned long final, dif;
+  if (status == FIXED_COMING){
+    beginningFixedWaiting = millis();
+    status = FIXED_WAITING;
+    return;
+  }
+  if (status == FIXED_WAITING){
+    final = millis();
+    dif = final - beginningFixedWaiting
+    if(dif >= quarterPeriod){         //arm is out of the way
+      cameraTrigger(pulseWidth);      //camera capture fixed mirror
+      status = RESET;
+    }
+    return;
+  }
+}
+
 
 void cameraTrigger(int pulseWidth){
   digitalWrite(TRIGGER_PIN, 0);
@@ -38,7 +71,8 @@ void cameraTrigger(int pulseWidth){
   digitalWrite(TRIGGER_PIN, 1);
 }
 
-void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsigned long &widthPulse, int &status){
+void processSignal(int signal, int &counter, unsigned long &beginningPulse, 
+  unsigned long &widthPulse, int &status){
   unsigned long widthPulseActual = 0, microsActual = 0;
   if (signal > signalHigh){
     counter++;               //sensed pulse is now high
