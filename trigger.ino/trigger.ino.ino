@@ -61,12 +61,12 @@ void processSignal(int signal, int &counter, int &beginningPulse, int &widthPuls
         status = RESET;
       }
       
-        widthPulse = widthPulseActual;    //save sensed pulse width
+      widthPulse = widthPulseActual;    //save sensed pulse width
     }
   }
-  if (signal < signalLow){
-    if (counter > 0){        //detected mobile arm
-      if (status == MOBILE_COMING){
+  if (signal < signalLow){		//sensed pulse is now low
+    if (counter > 0){        	//detected mobile arm
+      if (status == MOBILE_COMING){		//detected mobile mirror
         cameraTrigger(pulseWidth);    //pulse mobile mirror
         delay(35);                    //replace 35 by 1/4 T
         cameraTrigger(pulseWidth);    //pulse fixed mirror (triggered entirely by time)
@@ -79,7 +79,6 @@ void processSignal(int signal, int &counter, int &beginningPulse, int &widthPuls
 }
 
 void printValue(String name, int value){
-  
     Serial.print(" " + name + ":");
     Serial.print(value);
     Serial.println(" ");
