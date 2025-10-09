@@ -5,7 +5,7 @@ int PWM_PIN = 3;
 //statuses:
 const int VOLTAGE_INCREMENT = 1;
 const int DELAY_BASE_INCREMENT = -2;  //MILLISECONDS
-const int DELAY_BASE = 60;  //MILLISECONDS
+const int DELAY_BASE = 1600;  //MILLISECONDS
 const int UPPER_VOLTAGE_LIMIT = 254;    //4.96 V aprox.
 const int LOWER_VOLTAGE_LIMIT = 170;    //2.65 V aprox.
 
