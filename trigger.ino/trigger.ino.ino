@@ -1,5 +1,6 @@
 #include <EEPROM.h>
 int SIGNAL_PIN0 = A0;
+int SIGNAL_FIXED_MIRROR = A1;
 int TRIGGER_PIN = 2;
 
 //statuses:
@@ -15,6 +16,7 @@ int signalHigh = 52;
 int pulseWidth = 31;    //31 is the minimum pulse width that works
 
 int signal0 = 0;    //sensor for moving mirror
+int signalFixedMirror = 0;    //sensor for fixed mirror
 int counter0 = 0;   //status triggered in the begining
 unsigned long beginningPulse0 = micros();
 unsigned long periodBeginning = micros();
@@ -27,6 +29,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(SIGNAL_PIN0, INPUT);
+  pinMode(SIGNAL_FIXED_MIRROR, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
 
   digitalWrite(TRIGGER_PIN, 1);   //set to high, ready to trigger the optoisolator
@@ -34,9 +37,10 @@ void setup() {
 
 void loop() {
   signal0 = analogRead(SIGNAL_PIN0);
+  signalFixedMirror = analogRead(SIGNAL_FIXED_MIRROR);
   processSignal(signal0, counter0, beginningPulse0, widthPulse0, status);
   periodMeasurement(periodBeginning, beginningPulse0, halfPeriod, quarterPeriod);
-  fixedMirrorPulse(beginningFixedWaiting, quarterPeriod);
+  fixedMirrorPulse(beginningFixedWaiting, quarterPeriod, signalFixedMirror);
 }
 
 void periodMeasurement(unsigned long &periodBeginning, unsigned long &actualPulseBeginning, 
@@ -49,20 +53,20 @@ void periodMeasurement(unsigned long &periodBeginning, unsigned long &actualPuls
   }
 }
 
-void fixedMirrorPulse(unsigned long &beginningFixedWaiting, unsigned long &quarterPeriod){
+void fixedMirrorPulse(unsigned long &beginningFixedWaiting, unsigned long &quarterPeriod, int signalFixedMirror){
   unsigned long final, dif;
   if (status == FIXED_COMING){
-    
-    beginningFixedWaiting = millis();
     status = FIXED_WAITING;
+    beginningFixedWaiting = millis();
     return;
   }
   if (status == FIXED_WAITING){
-    final = millis();
-    dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
-    if(dif >= quarterPeriod){         //arm is out of the way
-      cameraTrigger(pulseWidth);      //camera capture fixed mirror
-      status = RESET;
+    if (signalFixedMirror < signalLow - 6){
+      //final = millis();
+      //dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
+        cameraTrigger(pulseWidth);      //camera capture fixed mirror
+        status = RESET;
+      //printValue("FixedMirror", dif);
     }
     return;
   }
