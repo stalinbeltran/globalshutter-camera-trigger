@@ -10,7 +10,7 @@ const int FIXED_COMING = 2;
 const int FIXED_WAITING = 3;
 int status = RESET;
 
-//signal "borders"
+//signalMobileMirror "borders"
 int signalLow = 46;
 int signalHigh = 52;
 const int PULSE_WIDTH = 31;    //31 is the minimum pulse width that works
@@ -19,7 +19,7 @@ int signalMobileMirror = 0;    //sensor for moving mirror
 int signalFixedMirror = 0;    //sensor for fixed mirror
 int counter0 = 0;   //status triggered in the begining
 unsigned long beginningMobileMirrorPulse = micros();
-unsigned long periodBeginning = micros();
+unsigned long periodBeginning = beginningMobileMirrorPulse;
 unsigned long beginningFixedWaiting = micros();
 unsigned long halfPeriod = 0;
 unsigned long quarterPeriod = 0;
@@ -38,12 +38,12 @@ void setup() {
 void loop() {
   signalMobileMirror = analogRead(SIGNAL_MOBILE_MIRROR);
   signalFixedMirror = analogRead(SIGNAL_FIXED_MIRROR);
-  processSignal(signalMobileMirror, counter0);
-  periodMeasurement(halfPeriod, quarterPeriod);
-  fixedMirrorPulse(quarterPeriod, signalFixedMirror);
+  processMobileSignal();
+  periodMeasurement();
+  fixedMirrorPulse();
 }
 
-void periodMeasurement(unsigned long &halfPeriod, unsigned long &quarterPeriod){
+void periodMeasurement(){
   if(periodBeginning != beginningMobileMirrorPulse){
     halfPeriod = (unsigned long)beginningMobileMirrorPulse - (unsigned long)periodBeginning;
     halfPeriod = halfPeriod/1000;     //microseconds to milliseconds
@@ -52,7 +52,7 @@ void periodMeasurement(unsigned long &halfPeriod, unsigned long &quarterPeriod){
   }
 }
 
-void fixedMirrorPulse(unsigned long &quarterPeriod, int signalFixedMirror){
+void fixedMirrorPulse(){
   unsigned long final, dif;
   if (status == FIXED_WAITING){
       final = millis();
@@ -72,11 +72,11 @@ void cameraTrigger(){
   digitalWrite(TRIGGER_PIN, 1);
 }
 
-void processSignal(int signal, int &counter){
+void processMobileSignal(){
   unsigned long widthPulseActual = 0, microsActual = 0;
-  if (signal > signalHigh){
-    counter++;               //sensed pulse is now high
-    if (counter == 1){
+  if (signalMobileMirror > signalHigh){
+    counter0++;               //sensed pulse is now high
+    if (counter0 == 1){
       if (status == FIXED_COMING){  //mobile pulse end, ready to read fixed mirror (here to avoid triggering while sensing mobile pulse)
         status = FIXED_WAITING;
         beginningFixedWaiting = millis();
@@ -91,14 +91,14 @@ void processSignal(int signal, int &counter){
     }
 	return;
   }
-  if (signal < signalLow){		//sensed pulse is now low
-    if (counter > 0){        	//previously was high, so mobile arm is now detected
+  if (signalMobileMirror < signalLow){		//sensed pulse is now low
+    if (counter0 > 0){        	//previously was high, so mobile arm is now detected
       beginningMobileMirrorPulse = (unsigned long)micros();    //start measuring the arm "width" when crossing the sensor
       if (status == MOBILE_COMING){		//detected mobile mirror
         cameraTrigger();    	//pulse to camera capture mobile mirror
         status = FIXED_COMING;
       }
-      counter = 0;           	//negative signal detected
+      counter0 = 0;           	//negative signalMobileMirror detected
     }
 	return;
   }
