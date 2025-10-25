@@ -23,7 +23,7 @@ unsigned long periodBeginning = micros();
 unsigned long beginningFixedWaiting = micros();
 unsigned long halfPeriod = 0;
 unsigned long quarterPeriod = 0;
-unsigned long widthPulse0 = 9999;
+unsigned long widthMobileMirrorPulse = 9999;
 
 void setup() {
   // put your setup code here, to run once:
@@ -38,7 +38,7 @@ void setup() {
 void loop() {
   signal0 = analogRead(SIGNAL_MOBILE_MIRROR);
   signalFixedMirror = analogRead(SIGNAL_FIXED_MIRROR);
-  processSignal(signal0, counter0, beginningMobileMirrorPulse, widthPulse0, status);
+  processSignal(signal0, counter0, beginningMobileMirrorPulse, widthMobileMirrorPulse, status);
   periodMeasurement(periodBeginning, beginningMobileMirrorPulse, halfPeriod, quarterPeriod);
   fixedMirrorPulse(beginningFixedWaiting, quarterPeriod, signalFixedMirror);
 }
@@ -79,19 +79,18 @@ void cameraTrigger(){
   digitalWrite(TRIGGER_PIN, 1);
 }
 
-void processSignal(int signal, int &counter, unsigned long &beginningPulse, 
-  unsigned long &widthPulse){
+void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsigned long &widthMobileMirrorPulse){
   unsigned long widthPulseActual = 0, microsActual = 0;
   if (signal > signalHigh){
     counter++;               //sensed pulse is now high
     if (counter == 1){
       microsActual = (unsigned long)micros();
       widthPulseActual = (unsigned long)microsActual - (unsigned long)beginningPulse;
-      if (widthPulseActual > widthPulse*2){     //widthPulseActual should be longer if it has no mirror
+      if (widthPulseActual > widthMobileMirrorPulse*2){     //widthPulseActual should be longer if it has no mirror
         status = MOBILE_COMING;
       }
       
-      widthPulse = widthPulseActual;    //save sensed pulse width
+      widthMobileMirrorPulse = widthPulseActual;    //save sensed pulse width
     }
 	return
   }
