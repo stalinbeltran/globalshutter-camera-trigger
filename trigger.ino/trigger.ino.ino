@@ -38,7 +38,7 @@ void setup() {
 void loop() {
   signal0 = analogRead(SIGNAL_MOBILE_MIRROR);
   signalFixedMirror = analogRead(SIGNAL_FIXED_MIRROR);
-  processSignal(signal0, counter0, beginningMobileMirrorPulse, widthMobileMirrorPulse, status);
+  processSignal(signal0, counter0, beginningMobileMirrorPulse, widthMobileMirrorPulse);
   periodMeasurement(periodBeginning, beginningMobileMirrorPulse, halfPeriod, quarterPeriod);
   fixedMirrorPulse(beginningFixedWaiting, quarterPeriod, signalFixedMirror);
 }
@@ -92,7 +92,7 @@ void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsi
       
       widthMobileMirrorPulse = widthPulseActual;    //save sensed pulse width
     }
-	return
+	return;
   }
   if (signal < signalLow){		//sensed pulse is now low
     if (counter > 0){        	//previously was high, so mobile arm is now detected
@@ -103,7 +103,7 @@ void processSignal(int signal, int &counter, unsigned long &beginningPulse, unsi
       }
       counter = 0;           //trigger once only
     }
-	return
+	return;
   }
 }
 
