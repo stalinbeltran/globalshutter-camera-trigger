@@ -55,12 +55,11 @@ void periodMeasurement(unsigned long &halfPeriod, unsigned long &quarterPeriod){
 void fixedMirrorPulse(unsigned long &quarterPeriod, int signalFixedMirror){
   unsigned long final, dif;
   if (status == FIXED_WAITING){
-    if (signalFixedMirror < signalLow - 6){
       final = millis();
-      //dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
+	  dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
+    if (signalFixedMirror < signalLow - 6 || dif >= quarterPeriod/5){		//fixed mirror sensor pulse or elapsed time to trigger capture
         cameraTrigger();      //camera capture fixed mirror
         status = RESET;
-      //printValue("FixedMirror", dif);
     }
     return;
   }
@@ -81,11 +80,11 @@ void processSignal(int signal, int &counter){
       if (status == FIXED_COMING){  //mobile pulse end, ready to read fixed mirror (here to avoid triggering while sensing mobile pulse)
         status = FIXED_WAITING;
         beginningFixedWaiting = millis();
-      }          
+      }
       microsActual = (unsigned long)micros();
       widthPulseActual = (unsigned long)microsActual - (unsigned long)beginningMobileMirrorPulse;
       if (widthPulseActual > widthMobileMirrorPulse*2){     //widthPulseActual should be longer if it has no mirror
-        status = MOBILE_COMING;
+        if (status == RESET) status = MOBILE_COMING;		//mandatory RESET before MOBILE_COMING, to stop triggering if not fixed pulse
       }
       
       widthMobileMirrorPulse = widthPulseActual;    //save sensed pulse width
