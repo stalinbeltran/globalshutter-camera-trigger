@@ -3,16 +3,19 @@
 int PWM_PIN = 3;
 
 //statuses:
-const int VOLTAGE_INCREMENT = 1;
-const int DELAY_BASE_INCREMENT = -2;  //MILLISECONDS
-const int DELAY_BASE = 1600;  //MILLISECONDS
-const int UPPER_VOLTAGE_LIMIT = 254;    //4.96 V aprox.
-const int LOWER_VOLTAGE_LIMIT = 170;    //2.65 V aprox.
+const float VOLTAGE_FACTOR = 1;
+const int DELAY_UPPER_LIMIT = 1600;  //MILLISECONDS
+const int VOLTAGE_UPPER_LIMIT = 254;    //4.96 V aprox. 254
+const int VOLTAGE_STEPS = 84;
+const int LOWER_VOLTAGE_LIMIT = VOLTAGE_UPPER_LIMIT - VOLTAGE_STEPS;    //2.65 V aprox. 170
+const float DELAY_FACTOR = (0.5*DELAY_UPPER_LIMIT)/VOLTAGE_STEPS;  // 9 MILLISECONDS
 
-unsigned int output = 0;
+unsigned int outputVoltage = 0;
 int stepDelay = 0;
 int delayIncrement = 0;
 int voltageIncrement = 0;
+int step = 0;
+int stepIncrement = 0;
 
 unsigned long beginningPulse0 = micros();
 
@@ -26,29 +29,29 @@ void setup() {
 }
 
 void startMotor(){    //fast start to avoid resonance in the motor
-  while(output <= UPPER_VOLTAGE_LIMIT){
-    output = output + 1;
-    analogWrite(PWM_PIN, output);
+  while(outputVoltage <= VOLTAGE_UPPER_LIMIT){
+    outputVoltage = outputVoltage + 1;
+    analogWrite(PWM_PIN, outputVoltage);
     delay(10);
   }
 }
 
 void loop() {
-    if (output >=UPPER_VOLTAGE_LIMIT){
-      delayIncrement = -1*DELAY_BASE_INCREMENT;
-      voltageIncrement = -1*VOLTAGE_INCREMENT;
-      stepDelay = DELAY_BASE;
+	step = step + stepIncrement;
+    if (outputVoltage >=VOLTAGE_UPPER_LIMIT){
+	  step = 0;									//reset on upper limit
+	  stepIncrement = 1;
     }
-    else if (output <= LOWER_VOLTAGE_LIMIT){
-      delayIncrement = DELAY_BASE_INCREMENT;
-      voltageIncrement = VOLTAGE_INCREMENT;
-    } 
-    output = output + voltageIncrement;
-    stepDelay = stepDelay + delayIncrement;
-    analogWrite(PWM_PIN, output);
+    else if (outputVoltage <= LOWER_VOLTAGE_LIMIT){
+	  stepIncrement = -1;
+    }
+	voltageIncrement = step*VOLTAGE_FACTOR;
+	delayIncrement = step*DELAY_FACTOR;
+    outputVoltage = VOLTAGE_UPPER_LIMIT - voltageIncrement;
+    stepDelay = DELAY_UPPER_LIMIT + delayIncrement;
+	
+    analogWrite(PWM_PIN, outputVoltage);
     delay(stepDelay);
-
-  
 }
 
 
