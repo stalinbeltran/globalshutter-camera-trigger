@@ -57,10 +57,9 @@ void fixedMirrorPulse(){
   if (status == FIXED_WAITING){
       final = millis();
 	  dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
-    if (dif >= 35){		//(35 milliseconds minimum) fixed mirror sensor pulse or elapsed time to trigger capture  //signalFixedMirror < signalLow - 0 and 
+    if (dif >= 35){		//(35 milliseconds minimum)
         cameraTrigger();      //camera capture fixed mirror
         status = RESET;
-        printValue("dif", dif);
     }
     return;
   }
