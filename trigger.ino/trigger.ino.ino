@@ -13,7 +13,7 @@ int status = RESET;
 //signalMobileMirror "borders"
 int signalLow = 46;
 int signalHigh = 52;
-const int PULSE_WIDTH = 31;    //31 is the minimum pulse width that works
+const int PULSE_WIDTH = 50;    //31 is the minimum pulse width that works
 
 int signalMobileMirror = 0;    //sensor for moving mirror
 int signalFixedMirror = 0;    //sensor for fixed mirror
@@ -57,9 +57,10 @@ void fixedMirrorPulse(){
   if (status == FIXED_WAITING){
       final = millis();
 	  dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
-    if (signalFixedMirror < signalLow - 6 || dif >= quarterPeriod/5){		//fixed mirror sensor pulse or elapsed time to trigger capture
+    if (signalFixedMirror < signalLow - 0 and dif >= 7){		//fixed mirror sensor pulse or elapsed time to trigger capture
         cameraTrigger();      //camera capture fixed mirror
         status = RESET;
+        printValue("dif", dif);
     }
     return;
   }
