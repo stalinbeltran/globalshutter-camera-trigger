@@ -15,7 +15,7 @@ int stepDelay = 0;
 int delayIncrement = 0;
 int voltageIncrement = 0;
 int step = 0;
-int stepIncrement = 0;
+int stepIncrement = -1;
 
 unsigned long beginningPulse0 = micros();
 
@@ -29,27 +29,31 @@ void setup() {
 }
 
 void startMotor(){    //fast start to avoid resonance in the motor
-  while(outputVoltage <= VOLTAGE_UPPER_LIMIT){
-    outputVoltage = outputVoltage + 1;
+  while(outputVoltage < VOLTAGE_UPPER_LIMIT){
     analogWrite(PWM_PIN, outputVoltage);
     delay(10);
+    outputVoltage = outputVoltage + 1;
   }
 }
 
 void loop() {
-	step = step + stepIncrement;
     if (outputVoltage >=VOLTAGE_UPPER_LIMIT){
-	  step = 0;									//reset on upper limit
-	  stepIncrement = 1;
+	    step = 0;									//reset on upper limit
+	    stepIncrement = 1;
     }
     else if (outputVoltage <= LOWER_VOLTAGE_LIMIT){
-	  stepIncrement = -1;
+	    stepIncrement = -1;
     }
+  step = step + stepIncrement; 
 	voltageIncrement = step*VOLTAGE_FACTOR;
 	delayIncrement = step*DELAY_FACTOR;
     outputVoltage = VOLTAGE_UPPER_LIMIT - voltageIncrement;
     stepDelay = DELAY_UPPER_LIMIT + delayIncrement;
-	
+
+  printValue("step", step);
+  printValue("stepIncrement", stepIncrement);
+  printValue("outputVoltage", outputVoltage);
+  printValue("stepDelay", stepDelay);
     analogWrite(PWM_PIN, outputVoltage);
     delay(stepDelay);
 }
