@@ -1,13 +1,13 @@
 #include <EEPROM.h>
 int SIGNAL_MOBILE_MIRROR = A0;
-int SIGNAL_FIXED_MIRROR = A1;
+//int SIGNAL_FIXED_MIRROR = A1;
 int TRIGGER_PIN = 2;
 
 //statuses:
 const int RESET = 0;
 const int MOBILE_COMING = 1;
-const int FIXED_COMING = 2;
-const int FIXED_WAITING = 3;
+//const int FIXED_COMING = 2;
+//const int FIXED_WAITING = 3;
 int status = RESET;
 
 //signalMobileMirror "borders"
@@ -16,11 +16,11 @@ int signalHigh = 52;
 const int PULSE_WIDTH = 50;    //31 is the minimum pulse width that works
 
 int signalMobileMirror = 0;    //sensor for moving mirror
-int signalFixedMirror = 0;    //sensor for fixed mirror
+//int signalFixedMirror = 0;    //sensor for fixed mirror
 int counter0 = 0;   //status triggered in the begining
 unsigned long beginningMobileMirrorPulse = micros();
 unsigned long periodBeginning = beginningMobileMirrorPulse;
-unsigned long beginningFixedWaiting = micros();
+//unsigned long beginningFixedWaiting = micros();
 unsigned long halfPeriod = 0;
 unsigned long quarterPeriod = 0;
 unsigned long widthMobileMirrorPulse = 9999;
@@ -29,7 +29,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(SIGNAL_MOBILE_MIRROR, INPUT);
-  pinMode(SIGNAL_FIXED_MIRROR, INPUT);
+  //pinMode(SIGNAL_FIXED_MIRROR, INPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
 
   digitalWrite(TRIGGER_PIN, 1);   //set to high, ready to trigger the optoisolator
@@ -37,10 +37,10 @@ void setup() {
 
 void loop() {
   signalMobileMirror = analogRead(SIGNAL_MOBILE_MIRROR);
-  signalFixedMirror = analogRead(SIGNAL_FIXED_MIRROR);
+  //signalFixedMirror = analogRead(SIGNAL_FIXED_MIRROR);
   processMobileSignal();
   periodMeasurement();
-  fixedMirrorPulse();
+  //fixedMirrorPulse();
 }
 
 void periodMeasurement(){
@@ -52,18 +52,18 @@ void periodMeasurement(){
   }
 }
 
-void fixedMirrorPulse(){
-  unsigned long final, dif;
-  if (status == FIXED_WAITING){
-      final = millis();
-	  dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
-    if (dif >= 35){		//(35 milliseconds minimum)
-        cameraTrigger();      //camera capture fixed mirror
-        status = RESET;
-    }
-    return;
-  }
-}
+//void fixedMirrorPulse(){
+//  unsigned long final, dif;
+//  if (status == FIXED_WAITING){
+//      final = millis();
+//	  dif = (unsigned long)final - (unsigned long)beginningFixedWaiting;
+//    if (dif >= 35){		//(35 milliseconds minimum)
+//        cameraTrigger();      //camera capture fixed mirror
+//        status = RESET;
+//    }
+//    return;
+//  }
+//}
 
 
 void cameraTrigger(){
@@ -77,13 +77,13 @@ void processMobileSignal(){
   if (signalMobileMirror > signalHigh){
     counter0++;               //sensed pulse is now high
     if (counter0 == 1){
-      if (status == FIXED_COMING){  //mobile pulse end, ready to read fixed mirror (here to avoid triggering while sensing mobile pulse)
-        status = FIXED_WAITING;
-        beginningFixedWaiting = millis();
-      }
+//      if (status == FIXED_COMING){  //mobile pulse end, ready to read fixed mirror (here to avoid triggering while sensing mobile pulse)
+//        status = FIXED_WAITING;
+//        beginningFixedWaiting = millis();
+//      }
       microsActual = (unsigned long)micros();
       widthPulseActual = (unsigned long)microsActual - (unsigned long)beginningMobileMirrorPulse;
-      if (widthPulseActual > widthMobileMirrorPulse*2){     //widthPulseActual should be longer if it has no mirror
+      if (widthPulseActual > widthMobileMirrorPulse*2){     //widthPulseActual should be longer if it has no mirror (instead has a long tail)
         if (status == RESET) status = MOBILE_COMING;		//mandatory RESET before MOBILE_COMING, to stop triggering if not fixed pulse
       }
       
@@ -96,7 +96,7 @@ void processMobileSignal(){
       beginningMobileMirrorPulse = (unsigned long)micros();    //start measuring the arm "width" when crossing the sensor
       if (status == MOBILE_COMING){		//detected mobile mirror
         cameraTrigger();    	//pulse to camera capture mobile mirror
-        status = FIXED_COMING;
+        status = RESET;
       }
       counter0 = 0;           	//negative signalMobileMirror detected
     }
