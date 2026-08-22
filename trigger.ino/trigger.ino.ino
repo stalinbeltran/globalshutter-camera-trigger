@@ -31,8 +31,10 @@ void setup() {
 
 void loop() {
   signalMobileMirror = analogRead(SIGNAL_MOBILE_MIRROR);
+  printValue("s", signalMobileMirror);
   processMobileSignal();
   periodMeasurement();
+  delay(50);
 }
 
 void periodMeasurement(){
